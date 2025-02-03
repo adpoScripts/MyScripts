@@ -54,7 +54,7 @@ local function makePlayerUpright()
                 local position = humanoidRootPart.Position
                 humanoidRootPart.CFrame = CFrame.new(position, position + Vector3.new(0, 0, 1))
             end
-            wait(0.1)
+            task.wait(0.1) -- Replaced wait() with task.wait()
         end
     end)
 end
@@ -75,7 +75,6 @@ local function isEnemyAlive(npc)
 end
 
 local function getEnemyTargetPosition(enemy)
-    -- Check for a valid part to teleport to
     local targetPart = enemy:FindFirstChild("HumanoidRootPart")
     
     if not targetPart then
@@ -88,7 +87,6 @@ local function getEnemyTargetPosition(enemy)
     return nil
 end
 
--- Handle Kaegyr's parts, specifically targeting RootPart and other key parts
 local function getKaegyrTargetPosition(kaegyr)
     local targetPart = kaegyr:FindFirstChild("RootPart") or kaegyr:FindFirstChild("Cube")
     
@@ -118,8 +116,10 @@ local function teleportToMode(npc)
         local offset = Vector3.new(0, 20, 0)
 
         if not targetPart then
+            print("No valid target part found!")
             return
         end
+        print("Teleporting to target position...")
 
         -- Adjust offset based on selected autofarm mode
         if autofarmMode == "Above" then
@@ -134,7 +134,7 @@ local function teleportToMode(npc)
             local radius = 5
             local speed = 1
             local angle = 0
-            spawn(function()
+            task.spawn(function() -- Changed spawn to task.spawn()
                 while autofarming do
                     local x = targetPart.X + radius * math.cos(angle)
                     local z = targetPart.Z + radius * math.sin(angle)
@@ -144,7 +144,7 @@ local function teleportToMode(npc)
                     humanoidRootPart.CFrame = targetCFrame
 
                     angle = angle + speed * 0.05
-                    wait(0.05)
+                    task.wait(0.05) -- Replaced wait() with task.wait()
                 end
             end)
             return
@@ -156,7 +156,7 @@ local function teleportToMode(npc)
 
         local adjustedTweenInfo = TweenInfo.new(tweenDuration, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
 
-        spawn(function()
+        task.spawn(function() -- Changed spawn to task.spawn()
             while autofarming do
                 if isEnemyAlive(npc) then
                     local currentTargetPosition = targetPart
@@ -179,12 +179,12 @@ local function teleportToMode(npc)
                         -- Keep moving the player continuously
                         while autofarming and isEnemyAlive(npc) do
                             bodyPosition.Position = currentTargetPosition + offset
-                            wait(0.05)
+                            task.wait(0.05) -- Replaced wait() with task.wait()
                         end
                         bodyPosition:Destroy()
                     end)
                 end
-                wait(0.5)
+                task.wait(0.5) -- Replaced wait() with task.wait()
             end
         end)
     end
@@ -217,9 +217,8 @@ local function teleportToClosestEnemy()
         if closestEnemy then
             teleportToMode(closestEnemy)
             makePlayerFaceForward()
-            wait(0.1)
         end
-        wait(0.1)
+        task.wait(0.1) -- Replaced wait() with task.wait()
     end
 end
 
@@ -228,7 +227,7 @@ game.Players.LocalPlayer.CharacterAdded:Connect(function(character)
     if autofarming then
         enableNoclip()
         makePlayerUpright()
-        spawn(teleportToClosestEnemy)
+        task.spawn(teleportToClosestEnemy) -- Changed spawn to task.spawn()
     end
 end)
 
@@ -237,7 +236,7 @@ tab:Toggle("Autofarm", false, function(t)
     if autofarming then
         enableNoclip()
         makePlayerUpright()
-        spawn(teleportToClosestEnemy)
+        task.spawn(teleportToClosestEnemy) -- Changed spawn to task.spawn()
     else
         disableNoclip()
     end
@@ -254,7 +253,7 @@ tab:Toggle("Auto Swing", false, function(t)
 
     while isAutoSwingActive do
         AutoSwing()
-        wait(0.1)
+        task.wait(0.1) -- Replaced wait() with task.wait()
     end
 end)
 
@@ -270,7 +269,7 @@ tab:Toggle("Auto Use Spells", false, function(t)
         local argsQ = { [1] = "Q" }
         game:GetService("ReplicatedStorage").useSpell:FireServer(unpack(argsQ))
 
-        wait(0.5)
+        task.wait(0.5) -- Replaced wait() with task.wait()
     end
 end)
 
@@ -286,10 +285,9 @@ tab:Toggle("Auto Replay", false, function(t)
 
         game:GetService("ReplicatedStorage").voteRemote:FireServer(unpack(args))
         
-        wait(1)
+        task.wait(1) -- Replaced wait() with task.wait()
     end
 end)
-
 
 local tab = win:Tab("Inventory")
 
